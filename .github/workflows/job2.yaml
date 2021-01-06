@@ -16,6 +16,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.workflow_run.head_commit.id}}
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
@@ -24,6 +26,11 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
-          echo ${{github.event.workflow_run.conclusion}}
+          echo CONCLUSION: ${{github.event.workflow_run.conclusion}}
+          echo COMMIT_ID: ${{github.event.workflow_run.head_commit.id}}
+          echo =============================================
+          echo README.md
+          cat README.md
+          echo =============================================
           echo Context:
           echo "$GITHUB_CONTEXT"          
