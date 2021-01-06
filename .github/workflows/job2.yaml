@@ -22,4 +22,6 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+          echo ${{github.event.workflow_run.conclusion}}
+          echo ${{github.event.workflow_run.sha}}
           
