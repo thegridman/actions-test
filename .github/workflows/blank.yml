@@ -1,43 +1,115 @@
-# This is a basic workflow to help you get started with Actions
+# Copyright (c) 2020, 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# http://oss.oracle.com/licenses/upl.
 
-name: CI
+# ---------------------------------------------------------------------------
+# Coherence Operator GitHub Actions Release build.
+# ---------------------------------------------------------------------------
+name: Operator Release
 
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main, v2 ]
-  pull_request:
-    branches: [ main, v2 ]
+  release:
+    types: [prereleased, released]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+#     - name: Set up JDK
+#       uses: actions/setup-java@v1
+#       with:
+#         java-version: '11'
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-        
-      - name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-          docker version
-          docker buildx ls
+#     - name: Cache Go Modules
+#       uses: actions/cache@v1
+#       with:
+#         path: ~/go/pkg/mod
+#         key: ${{ runner.os }}-go-mods-${{ hashFiles('**/go.sum') }}
+#         restore-keys: |
+#           ${{ runner.os }}-go-mods-
+
+#     - name: Cache Maven packages
+#       uses: actions/cache@v1
+#       with:
+#         path: ~/.m2
+#         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#         restore-keys: ${{ runner.os }}-m2
+
+#     - name: Set up Go
+#       uses: actions/setup-go@v2
+#       with:
+#         go-version: 1.17.x
+
+#     - name: Start KinD Cluster
+#       shell: bash
+#       run: |
+#         make kind
+#         kubectl version
+#         kubectl get nodes
+#         docker pull gcr.io/distroless/java
+#         docker pull gcr.io/distroless/java11
+#         docker pull gcr.io/distroless/java17
+
+    - name: Release
+      shell: bash
+      run: |
+        mkdir -p /tmp/coherence-operator/_output || true
+        echo "This is a test coherence-operator-manifests.tar.gz" > /tmp/coherence-operator/_output/coherence-operator-manifests.tar.gz
+        echo "This is a test coherence-operator.yaml" > /tmp/coherence-operator/_output/coherence-operator.yaml
+        echo "This is a test coherence.oracle.com_coherence.yaml" > /tmp/coherence-operator/_output/manifests/crd/coherence.oracle.com_coherence.yaml
+
+    - name: Upload Release Manifests
+      id: upload-release-manifests
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: /tmp/coherence-operator/_output/coherence-operator-manifests.tar.gz
+        asset_name: coherence-operator-manifests.tar.gz
+        asset_content_type: application/tar+gzip
+
+    - name: Upload Release Yaml
+      id: upload-release-yaml
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: /tmp/coherence-operator/_output/coherence-operator.yaml
+        asset_name: coherence-operator.yaml
+        asset_content_type: text/plain
+
+    - name: Upload Release CRD
+      id: upload-release-crd
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: /tmp/coherence-operator/_output/manifests/crd/coherence.oracle.com_coherence.yaml
+        asset_name: coherence.oracle.com_coherence.yaml
+        asset_content_type: text/plain
+
+#    - name: Upload Manifests
+#      uses: actions/upload-artifact@v1
+#      with:
+#        name: coherence-operator-manifests.tar.gz
+#        path: /tmp/coherence-operator/_output/coherence-operator-manifests.tar.gz
+#
+#    - name: Upload Yaml
+#      uses: actions/upload-artifact@v1
+#      with:
+#        name: coherence-operator.yaml
+#        path: /tmp/coherence-operator/_output/coherence-operator.yaml
+#
+#    - name: Upload CRD
+#      uses: actions/upload-artifact@v1
+#      with:
+#        name: coherence.oracle.com_coherence.yaml
+#        path: /tmp/coherence-operator/_output/manifests/crd/coherence.oracle.com_coherence.yaml
