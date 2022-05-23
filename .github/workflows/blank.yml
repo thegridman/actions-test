@@ -58,7 +58,7 @@ jobs:
     - name: Release
       shell: bash
       run: |
-        mkdir -p /tmp/coherence-operator/_output || true
+        mkdir -p /tmp/coherence-operator/_output/manifests/crd || true
         echo "This is a test coherence-operator-manifests.tar.gz" > /tmp/coherence-operator/_output/coherence-operator-manifests.tar.gz
         echo "This is a test coherence-operator.yaml" > /tmp/coherence-operator/_output/coherence-operator.yaml
         echo "This is a test coherence.oracle.com_coherence.yaml" > /tmp/coherence-operator/_output/manifests/crd/coherence.oracle.com_coherence.yaml
