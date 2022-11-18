@@ -19,8 +19,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      ACTION_TIMEOUT: ${{ secrets.ActionTimeout }}
 
     steps:
     - if: ${{ env.action_timeout == '' }}
@@ -30,27 +28,14 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: disc
+    - name: test
       shell: bash
       run: |
-        echo "Listing 100 largest packages"
-        dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
-        df -h
-        echo "Removing large packages"
-        sudo apt-get remove -y '^dotnet-.*'
-        sudo apt-get remove -y '^llvm-.*'
-        sudo apt-get remove -y 'monodoc-http'
-        sudo apt-get remove -y 'php.*'
-        sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
-        sudo apt-get autoremove -y
-        sudo apt-get clean
-        df -h
-        echo "Removing large directories"
-        rm -rf /usr/share/dotnet/
-        df -h
-
-    - name: Testing
-      shell: bash
-      run: |
-        echo "The timeout is ${ACTION_TIMEOUT}"
+          mkdir -p /tmp/5439732165703678110/test-classes/certs/
+          openssl genrsa -passout pass:s3cr37 -aes256 -out /tmp/5439732165703678110/test-classes/certs/server-ca-ca.key 4096
+          openssl req -passin pass:s3cr37 -new -x509 -days 3650 -subj /CN=server-ca -key /tmp/5439732165703678110/test-classes/certs/server-ca-ca.key -out /tmp/5439732165703678110/test-classes/certs/server-ca-ca.cert
+          openssl genrsa -passout pass:pa55w0rd -aes256 -out /tmp/5439732165703678110/test-classes/certs/server.key 4096
+          openssl req -passin pass:pa55w0rd -new -subj /CN=server -key /tmp/5439732165703678110/test-classes/certs/server.key -out /tmp/5439732165703678110/test-classes/certs/server-signing.key
+          openssl x509 -req -passin pass:s3cr37 -days 3650 -in /tmp/5439732165703678110/test-classes/certs/server-signing.key -CA /tmp/5439732165703678110/test-classes/certs/server-ca-ca.cert -CAkey /tmp/5439732165703678110/test-classes/certs/server-ca-ca.key -set_serial 01 -out /tmp/5439732165703678110/test-classes/certs/server.cert -extfile /tmp/5439732165703678110/test-classes/certs/csr-details.txt
+          openssl pkcs8 -topk8 -outform pem -v1 PBE-MD5-DES -in /tmp/5439732165703678110/test-classes/certs/server.key -out /tmp/5439732165703678110/test-classes/certs/server.pem -passin pass:pa55w0rd -passout pass:pa55w0rd
 
