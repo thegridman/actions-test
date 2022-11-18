@@ -44,5 +44,6 @@ jobs:
           # echo "5"
           # openssl x509 -req -passin pass:s3cr37 -days 3650 -in /tmp/jk/test-classes/certs/server-signing.key -CA /tmp/jk/test-classes/certs/server-ca-ca.cert -CAkey /tmp/jk/test-classes/certs/server-ca-ca.key -set_serial 01 -out /tmp/jk/test-classes/certs/server.cert -extfile /tmp/jk/test-classes/certs/csr-details.txt
           echo "6"
-          openssl pkcs8 -topk8 -outform pem -v1 PBE-MD5-DES -in /tmp/jk/test-classes/certs/server.key -out /tmp/jk/test-classes/certs/server.pem -passin pass:pa55w0rd -passout pass:pa55w0rd
+          # openssl pkcs8 -topk8 -outform pem -v1 PBE-MD5-DES -in /tmp/jk/test-classes/certs/server.key -out /tmp/jk/test-classes/certs/server.pem -passin pass:pa55w0rd -passout pass:pa55w0rd
+          openssl pkcs8 -topk8 -outform pem -v2 des3 -in /tmp/jk/test-classes/certs/server.key -out /tmp/jk/test-classes/certs/server.pem -passin pass:pa55w0rd -passout pass:pa55w0rd
 
