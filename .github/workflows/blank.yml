@@ -31,11 +31,11 @@ jobs:
           echo "1"
           openssl genrsa -passout pass:s3cr37 -aes256 -out server-ca-ca.key 4096
           echo "2"
-          openssl req -passin pass:s3cr37 -new -x509 -days 3650 -subj "/CN=server-ca" -key server-ca-ca.key -out server-ca-ca.cert
+          openssl req -passin pass:s3cr37 -new -x509 -days 3650 -subj "CN=server-ca" -key server-ca-ca.key -out server-ca-ca.cert
           echo "3"
           openssl genrsa -passout pass:pa55w0rd -aes256 -out server.key 4096
           echo "4"
-          openssl req -passin pass:pa55w0rd -new -subj "/CN=server" -key server.key -out server-signing.key
+          openssl req -passin pass:pa55w0rd -new -subj "CN=server" -key server.key -out server-signing.key
           # echo "5"
           # openssl x509 -req -passin pass:s3cr37 -days 3650 -in server-signing.key -CA server-ca-ca.cert -CAkey server-ca-ca.key -set_serial 01 -out server.cert -extfile csr-details.txt
           echo "6"
