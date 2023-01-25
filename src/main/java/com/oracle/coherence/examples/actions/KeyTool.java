@@ -230,7 +230,7 @@ public class KeyTool
 
     private static void toPem(File fileKey, File filePEM, String sKeyPass)
         {
-        Arguments arguments = Arguments.of("pkcs8", "-topk8", "-outform", "pem", "-v2", "des3",
+        Arguments arguments = Arguments.of("pkcs8", "-topk8", "-outform", "pem", "-v1", "PBE-SHA1-3DES",
                                            "-in", fileKey.getAbsolutePath(),
                                            "-out", filePEM.getAbsolutePath());
 
