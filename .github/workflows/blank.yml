@@ -9,37 +9,19 @@ name: Test
 
 on:
   workflow_dispatch:
-  push:
-    branches-ignore:
-    - gh-pages
-    - p4-integ*
-    - last-p4-*
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-#    runs-on: windows-latest
+  one:
+    name: Child One
+    uses: ./.github/workflows/child.yml
+    secrets: inherit
+    with:
+      myId: one
 
-    steps:        
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
-
-    - name: test
-      shell: bash
-      run: |
-        mvn clean verify
+  two:
+    name: Child Two
+    uses: ./.github/workflows/child.yml
+    secrets: inherit
+    with:
+      myId: two
 
